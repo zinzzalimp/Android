@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Android</string>
+    <string name="imageCabinet_API_KEY">fbcdc5752ef11b58e679ff55ed63f3e2</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

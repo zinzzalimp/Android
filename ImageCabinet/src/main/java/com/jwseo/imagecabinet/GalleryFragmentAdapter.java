@@ -10,20 +10,31 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 public class GalleryFragmentAdapter extends FragmentStatePagerAdapter {
 
     //앱은 2개의 fragment만 가진다.
-    public static final int MAX_FRAGMENT_SIZE = 2;
+    private int mTabCount = 0;
+    private static final int IMAGE_SERARCH_TAB_INDEX = 0;
+    private static final int IMAGE_CABINET_INDEX = 1;
 
-    public GalleryFragmentAdapter(FragmentManager fm) {
+    public GalleryFragmentAdapter(FragmentManager fm, int tabCount) {
         super(fm);
+        mTabCount = tabCount;
     }
 
 
     @Override
     public Fragment getItem(int position) {
+        if (position == IMAGE_SERARCH_TAB_INDEX) {
+            SearchImageFragment searchImageFragment = new SearchImageFragment();
+            return searchImageFragment;
+        } else if (position == IMAGE_CABINET_INDEX) {
+            CabinetFragment cabinetFragment = new CabinetFragment();
+            return cabinetFragment;
+
+        }
         return null;
     }
 
     @Override
     public int getCount() {
-        return MAX_FRAGMENT_SIZE;
+        return mTabCount;
     }
 }
