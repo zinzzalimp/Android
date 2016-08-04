@@ -32,10 +32,10 @@ public class ImageCabinetApplication extends Application {
     public void checkItem(String key, boolean checked) {
         if (mImageItemMap.containsKey(key)) {
             mImageItemMap.get(key).setChecked(checked);
-            if (checked)
+            /*if (checked)
                 mCabinetItemMap.put(key, mImageItemMap.get(key));
             else
-                mCabinetItemMap.remove(key);
+                mCabinetItemMap.remove(key);*/
         }
     }
 
@@ -44,7 +44,7 @@ public class ImageCabinetApplication extends Application {
         mImageItemMap.clear();
     }
 
-    public HashMap<String, DaumImageItem> getCheckedItems() {
+    private HashMap<String, DaumImageItem> getCheckedItems() {
         HashMap<String, DaumImageItem> result = new HashMap<>();
         for (String key : mImageItemMap.keySet()) {
             if (mImageItemMap.get(key).getChecked()) {
@@ -52,5 +52,13 @@ public class ImageCabinetApplication extends Application {
             }
         }
         return result;
+    }
+
+    public void saveCheckedItem() {
+        for (String key : mImageItemMap.keySet()) {
+            if (mImageItemMap.get(key).getChecked()) {
+                mCabinetItemMap.put(key, mImageItemMap.get(key));
+            }
+        }
     }
 }

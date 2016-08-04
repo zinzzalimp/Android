@@ -1,6 +1,9 @@
 package com.jwseo.imagecabinet;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,6 +33,7 @@ public class CabinetFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
     @Override
@@ -45,12 +49,17 @@ public class CabinetFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ACTION_CLEAR_CABINET_GRID_VIEW);
+        filter.addAction(ACTION_REFRESH_SEARCH_GRID_VIEW);
+        getActivity().registerReceiver(CabinetBroadcastReceiver, filter);
 
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        getActivity().unregisterReceiver(CabinetBroadcastReceiver);
     }
 
     private int getDisplayWidth() {
@@ -78,7 +87,7 @@ public class CabinetFragment extends Fragment {
                 //CabinetGridView.setOnItemClickListener(gridViewOnItemClickListener);
                 ArrayList<DaumImageItem> list = new ArrayList<>(application.getCabinetItemMap().values());
                 mCabinetGridAdapter = new GridViewAdapter(getContext(), R.layout.image_item_layout, list);
-                mCabinetGridAdapter.setGridViewAdapterType(GridViewAdapter.GridViewAdapterType.SEARCH_GRIDVIEW);
+                mCabinetGridAdapter.setGridViewAdapterType(GridViewAdapter.GridViewAdapterType.CABINET_GRIDVIEW);
                 CabinetGridView.setAdapter(mCabinetGridAdapter);
                 //fragment view
                 ((ViewGroup) getView()).addView(CabinetGridView);
@@ -88,4 +97,24 @@ public class CabinetFragment extends Fragment {
     }
 
 
+    public void clearView() {
+        ((ViewGroup) getView()).removeAllViews();
+        CabinetGridView = null;
+        System.gc();
+    }
+
+    public static final String ACTION_REFRESH_SEARCH_GRID_VIEW = "ACTION_REFRESH_CABINET_GRID_VIEW";
+    public static final String ACTION_CLEAR_CABINET_GRID_VIEW = "ACTION_CLEAR_CABINET_GRID_VIEW";
+
+    private BroadcastReceiver CabinetBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(ACTION_REFRESH_SEARCH_GRID_VIEW)) {
+                refreshGridView();
+            } else if (action.equals(ACTION_CLEAR_CABINET_GRID_VIEW)) {
+                clearView();
+            }
+        }
+    };
 }

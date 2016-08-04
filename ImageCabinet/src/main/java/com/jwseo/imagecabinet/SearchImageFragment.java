@@ -2,7 +2,9 @@ package com.jwseo.imagecabinet;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
@@ -53,20 +55,43 @@ public class SearchImageFragment extends Fragment {
 
     private SearchView mSearchView;
     private GridViewAdapter mSearchGridAdapter;
-    private String findImage_pre = "http://apis.daum.net/search/image?apikey=";
+    private String findImage_pre = "https://apis.daum.net/search/image?apikey=";
     private String findImage_med = "&q=";
     private String findImage_post = "&output=json";
     private GridView SearchGridView;
     private ProgressDialog progressDialog;
     private ImageCabinetApplication application;
-    private OnItemSelectedListener mListener;
+
 
 
     private Handler uiHandler = new Handler();
 
     public class GetImageDataTask extends AsyncTask<String, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog.setTitle("Processing....");
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.show();
+        }
+
         @Override
         protected Void doInBackground(String... params) {
+            //Parsing Json Data using Gson
+            //clear common storage
+            application.clearImageData();
+            //clear GridView for Memory
+            uiHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (SearchGridView != null) {
+                        ((ViewGroup) getView()).removeView(SearchGridView);
+                        SearchGridView = null;
+                        System.gc();
+                    }
+                }
+            });
             String query_url = params[0];
             try {
                 getJSONFromUrl(query_url);
@@ -74,6 +99,37 @@ public class SearchImageFragment extends Fragment {
                 e.printStackTrace();
             }
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            progressDialog.dismiss();
+            //make Search GridView
+            uiHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    //if already added remove
+
+                    SearchGridView = new GridView(getContext());
+                    SearchGridView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+                    SearchGridView.setColumnWidth(getDisplayWidth() / 3);
+
+                    SearchGridView.setNumColumns(3);
+                    SearchGridView.setClickable(true);
+                    SearchGridView.setFocusable(true);
+                    SearchGridView.setStretchMode(GridView.STRETCH_COLUMN_WIDTH);
+                    SearchGridView.setOnItemClickListener(gridViewOnItemClickListener);
+                    ArrayList<DaumImageItem> list = new ArrayList<>(application.getImageData().values());
+                    mSearchGridAdapter = new GridViewAdapter(getContext(), R.layout.image_item_layout, list);
+                    mSearchGridAdapter.setGridViewAdapterType(GridViewAdapter.GridViewAdapterType.SEARCH_GRIDVIEW);
+                    SearchGridView.setAdapter(mSearchGridAdapter);
+                    //fragment view
+                    ((LinearLayout) getView()).addView(SearchGridView);
+                    mSearchGridAdapter.notifyDataSetChanged();
+                }
+            });
         }
     }
 
@@ -88,6 +144,7 @@ public class SearchImageFragment extends Fragment {
         protected void onPreExecute() {
             super.onPreExecute();
             progressDialog.setTitle("Processing....");
+            progressDialog.setCanceledOnTouchOutside(false);
             progressDialog.show();
         }
 
@@ -97,8 +154,18 @@ public class SearchImageFragment extends Fragment {
             //Parsing Json Data using Gson
             //TODO: Change to use Daum API
             //clear common storage
-
             application.clearImageData();
+            //clear GridView for Memory
+            uiHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (SearchGridView != null) {
+                        ((ViewGroup) getView()).removeView(SearchGridView);
+                        SearchGridView = null;
+                        System.gc();
+                    }
+                }
+            });
             JsonParser jsonParser = new JsonParser();
             JsonObject jsonObject = (JsonObject) jsonParser.parse(testJSON);
 
@@ -109,8 +176,6 @@ public class SearchImageFragment extends Fragment {
                 DaumImageItem elem = get_imageItem.fromJson(element, DaumImageItem.class);
                 elem.instantiateItem(BitmapFactory.decodeResource(getResources(), R.drawable.image_not_found));
                 application.addImageData(elem);
-
-
             }
             return null;
         }
@@ -180,56 +245,43 @@ public class SearchImageFragment extends Fragment {
         View fragment_view = inflater.inflate(R.layout.fragment_search_image, container, false);
         mSearchView = (SearchView) fragment_view.findViewById(R.id.search_image_view);
         mSearchView.setOnQueryTextListener(mSearchQueryListener);
+        mSearchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    ((SearchView) v).setQuery("", false);
+                }
+            }
+        });
         //mSearchView.setOnClickListener(mSearchViewOnClickListener);
         progressDialog = new ProgressDialog(getContext());
         application = (ImageCabinetApplication) getActivity().getApplication();
         return fragment_view;
     }
 
-    public interface OnItemSelectedListener {
-        void OnSelected(DaumImageItem item);
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnItemSelectedListener) {
-            mListener = (OnItemSelectedListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnItemSelectedListener");
-        }
 
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
-
     }
 
-    /*private SearchView.OnClickListener mSearchViewOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            //reset SearchView
-            ((SearchView)v).setQuery("",false);
-            ((SearchView)v).setIconified(true);
-
-        }
-    };*/
     private SearchView.OnQueryTextListener mSearchQueryListener = new SearchView.OnQueryTextListener() {
 
         @Override
         public boolean onQueryTextSubmit(String query) {
             String query_url = makeSearchURL(getString(R.string.imageCabinet_API_KEY), query);
 
-            //GetImageDataTask getImageDataTask = new GetImageDataTask();
-            //getImageDataTask.execute(query_url);
+            GetImageDataTask getImageDataTask = new GetImageDataTask();
+            getImageDataTask.execute(query_url);
 
             //ignore others but item
-            TestGetImageTask testGetImageTask = new TestGetImageTask();
-            testGetImageTask.execute(query_url);
+            //TestGetImageTask testGetImageTask = new TestGetImageTask();
+            //testGetImageTask.execute(query_url);
             mSearchView.clearFocus();
             return true;
         }
@@ -250,8 +302,8 @@ public class SearchImageFragment extends Fragment {
         if (!URLUtil.isValidUrl(url_str))
             throw new MalformedURLException();
         if (URLUtil.isHttpUrl(url_str)) {
-            //URL url = new URL(url_str);
-            URL url = new URL("http://newy.tistory.com/entry/post-2");
+            URL url = new URL(url_str);
+            //URL url = new URL("http://newy.tistory.com/entry/post-2");
             HttpURLConnection urlConnection;
 
             try {
@@ -272,6 +324,7 @@ public class SearchImageFragment extends Fragment {
         } else if (URLUtil.isHttpsUrl(url_str)) {
             URL url = new URL(url_str);
             HttpURLConnection urlConnection;
+            StringBuilder jsonString = new StringBuilder();
             try {
                 urlConnection = (HttpURLConnection) url.openConnection();
             } catch (IOException e) {
@@ -279,7 +332,23 @@ public class SearchImageFragment extends Fragment {
                 return null;
             }
             try {
+
                 InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                String line;
+                while ((line = reader.readLine()) != null)
+                    jsonString.append(line);
+                JsonParser jsonParser = new JsonParser();
+                JsonObject jsonObject = (JsonObject) jsonParser.parse(jsonString.toString());
+
+                JsonArray jsonArray = jsonObject.getAsJsonObject("channel").getAsJsonArray("item");
+
+                for (JsonElement element : jsonArray) {
+                    Gson get_imageItem = new Gson();
+                    DaumImageItem elem = get_imageItem.fromJson(element, DaumImageItem.class);
+                    elem.instantiateItem(BitmapFactory.decodeResource(getResources(), R.drawable.image_not_found));
+                    application.addImageData(elem);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {

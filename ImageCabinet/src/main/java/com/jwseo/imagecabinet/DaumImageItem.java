@@ -96,7 +96,7 @@ public class DaumImageItem {
             }
         }
         //get Image BItmap
-        if (URLUtil.isValidUrl(image)) {
+        /*if (URLUtil.isValidUrl(image)) {
             try {
 
                 URL url = new URL(image);
@@ -116,7 +116,7 @@ public class DaumImageItem {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
+        }*/
         //use hashkey
         makeHashbyImageAddress();
     }
