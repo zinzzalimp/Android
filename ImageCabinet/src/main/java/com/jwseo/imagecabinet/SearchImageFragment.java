@@ -46,7 +46,7 @@ public class SearchImageFragment extends Fragment {
     private GridViewAdapter mSearchGridAdapter;
     private String findImage_pre = "https://apis.daum.net/search/image?apikey=";
     private String findImage_med = "&q=";
-    private String findImage_post = "&output=json";
+    private String findImage_post = "&result=20&output=json";
     private GridView SearchGridView;
     private ProgressDialog progressDialog;
     private ImageCabinetApplication application;
