@@ -1,4 +1,4 @@
-package com.jwseo.imagecabinet;
+package com.jwseo.imagecabinet.fragment;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -11,6 +11,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
+
+import com.jwseo.imagecabinet.util.DaumImageItem;
+import com.jwseo.imagecabinet.ImageCabinetApplication;
+import com.jwseo.imagecabinet.R;
+import com.jwseo.imagecabinet.adapter.GridViewAdapter;
+import com.jwseo.imagecabinet.view.CabinetGridView;
 
 import java.util.ArrayList;
 

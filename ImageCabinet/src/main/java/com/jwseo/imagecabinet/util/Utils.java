@@ -1,4 +1,4 @@
-package com.jwseo.imagecabinet;
+package com.jwseo.imagecabinet.util;
 
 import android.content.Context;
 import android.graphics.Point;

@@ -2,6 +2,8 @@ package com.jwseo.imagecabinet;
 
 import android.app.Application;
 
+import com.jwseo.imagecabinet.util.DaumImageItem;
+
 import java.util.HashMap;
 
 /**

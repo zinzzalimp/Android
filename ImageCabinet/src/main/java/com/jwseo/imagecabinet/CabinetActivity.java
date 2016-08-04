@@ -9,6 +9,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.jwseo.imagecabinet.adapter.GalleryFragmentAdapter;
+import com.jwseo.imagecabinet.fragment.CabinetFragment;
+import com.jwseo.imagecabinet.fragment.SearchImageFragment;
+
 public class CabinetActivity extends AppCompatActivity {
 
     private GalleryFragmentAdapter mFragmentAdapter;

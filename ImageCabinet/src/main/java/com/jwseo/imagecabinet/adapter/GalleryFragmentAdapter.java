@@ -1,10 +1,14 @@
-package com.jwseo.imagecabinet;
+package com.jwseo.imagecabinet.adapter;
 
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.view.ViewGroup;
+
+import com.jwseo.imagecabinet.CabinetActivity;
+import com.jwseo.imagecabinet.fragment.CabinetFragment;
+import com.jwseo.imagecabinet.fragment.SearchImageFragment;
 
 /**
  * Created by zinzz on 2016-08-01.

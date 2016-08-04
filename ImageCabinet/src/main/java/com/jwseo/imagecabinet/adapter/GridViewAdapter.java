@@ -1,4 +1,4 @@
-package com.jwseo.imagecabinet;
+package com.jwseo.imagecabinet.adapter;
 
 import android.content.Context;
 import android.graphics.Point;
@@ -9,6 +9,9 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+
+import com.jwseo.imagecabinet.util.DaumImageItem;
+import com.jwseo.imagecabinet.R;
 
 import java.util.ArrayList;
 

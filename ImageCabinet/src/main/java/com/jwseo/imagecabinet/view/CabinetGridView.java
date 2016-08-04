@@ -1,11 +1,10 @@
-package com.jwseo.imagecabinet;
+package com.jwseo.imagecabinet.view;
 
 import android.content.Context;
-import android.graphics.Point;
-import android.view.Display;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.GridView;
+
+import com.jwseo.imagecabinet.util.Utils;
 
 /**
  * Created by zinzz on 2016-08-04.
