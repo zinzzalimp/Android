@@ -4,18 +4,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Point;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.GridView;
-import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 
@@ -25,6 +20,7 @@ public class CabinetFragment extends Fragment {
     ImageCabinetApplication application;
     GridView CabinetGridView;
 
+    //TODO: For now, use Thumbnail image from searching API, but I have to change use actual saved image in internal memory to make thumbnail image.
     public CabinetFragment() {
         // Required empty public constructor
     }
@@ -62,29 +58,13 @@ public class CabinetFragment extends Fragment {
         getActivity().unregisterReceiver(CabinetBroadcastReceiver);
     }
 
-    private int getDisplayWidth() {
-        Display display = ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        return size.x;
-    }
-
     private Handler uiHandler = new Handler();
 
     public void refreshGridView() {
         uiHandler.post(new Runnable() {
             @Override
             public void run() {
-                CabinetGridView = new GridView(getContext());
-                CabinetGridView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-                CabinetGridView.setColumnWidth(getDisplayWidth() / 3);
-
-                CabinetGridView.setNumColumns(3);
-                CabinetGridView.setClickable(true);
-                CabinetGridView.setFocusable(true);
-                CabinetGridView.setStretchMode(GridView.STRETCH_COLUMN_WIDTH);
-                //CabinetGridView.setOnItemClickListener(gridViewOnItemClickListener);
+                CabinetGridView = new CabinetGridView(getContext());
                 ArrayList<DaumImageItem> list = new ArrayList<>(application.getCabinetItemMap().values());
                 mCabinetGridAdapter = new GridViewAdapter(getContext(), R.layout.image_item_layout, list);
                 mCabinetGridAdapter.setGridViewAdapterType(GridViewAdapter.GridViewAdapterType.CABINET_GRIDVIEW);

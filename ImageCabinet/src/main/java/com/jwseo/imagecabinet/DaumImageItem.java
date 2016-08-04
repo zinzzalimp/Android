@@ -1,6 +1,5 @@
 package com.jwseo.imagecabinet;
 
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.webkit.URLUtil;

@@ -1,22 +1,13 @@
 package com.jwseo.imagecabinet;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.net.Uri;
+import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
-import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
-
-import java.util.HashMap;
 
 public class CabinetActivity extends AppCompatActivity {
 
@@ -35,8 +26,12 @@ public class CabinetActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.savemenu:
+                //TODO: Actual Image Save in Internal memory
                 ((ImageCabinetApplication) getApplication()).saveCheckedItem();
                 Toast.makeText(this, "Image Saved", Toast.LENGTH_SHORT).show();
+                Intent clear_checkedItem = new Intent();
+                clear_checkedItem.setAction(SearchImageFragment.ACTION_CLEAR_CHECKED_VIEW);
+                sendBroadcast(clear_checkedItem);
         }
         return true;
     }

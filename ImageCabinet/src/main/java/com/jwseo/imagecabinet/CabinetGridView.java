@@ -16,19 +16,16 @@ public class CabinetGridView extends GridView {
         super(context);
         setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        setColumnWidth(getDisplayWidth() / 3);
+        setColumnWidth(Utils.getDisplayWidth(getContext()) / 3);
 
         setNumColumns(3);
         setClickable(true);
         setFocusable(true);
         setStretchMode(GridView.STRETCH_COLUMN_WIDTH);
+        setHorizontalSpacing(10);
+        setVerticalSpacing(10);
+
     }
 
-    private int getDisplayWidth() {
-        Display display = ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        return size.x;
-    }
 
 }
